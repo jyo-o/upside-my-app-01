@@ -2,8 +2,15 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+ENV UV_CONFIG_FILE=/app/.config/uv/uv.toml
+ENV PATH="/app/.venv/bin:$PATH"
+
+RUN pip install --no-cache-dir uv
+
+COPY pyproject.toml uv.lock ./
+COPY .config/uv/uv.toml .config/uv/uv.toml
+
+RUN uv sync --locked --no-dev
 
 COPY . .
 
